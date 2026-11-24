@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>战区看板后台</title>
+    <link rel="stylesheet" href="/admin.css" />
+    <link rel="stylesheet" href="/review.css" />
+    <script src="/review.js" defer></script>
+    <script src="/admin.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <aside class="rail" aria-label="后台导航">
+      <a class="brand" href="#main" aria-label="战区看板后台首页"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12"/><path d="m21 11-3 7-7 3 3-7z"/></svg></a>
+      <div class="rail-line"></div>
+      <a class="rail-item" href="/" aria-label="看板与更新合并页" title="看板与更新合并页"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 20V9"/></svg></a>
+      <a class="rail-item active" href="#sources" aria-label="更新资料" title="更新资料"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M4 14v6h16v-6"/></svg></a>
+      <a class="rail-item" href="#generate" aria-label="手动生成" title="手动生成"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4m-5-8 3-3 3 2 4-5"/></svg></a>
+      <a class="rail-item" href="#history" aria-label="生成记录" title="生成记录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9a8 8 0 1 1 0 6M4 4v5h5m3-2v5l3 2"/></svg></a>
+      <a class="rail-item rail-bottom" href="#about" aria-label="使用说明" title="使用说明"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></svg></a>
+      <span class="rail-version">LOCAL</span>
+    </aside>
+    <main id="main">
+      <header class="page-header">
+        <div><p class="eyebrow">TERRITORY WORKSPACE</p><h1>战区看板后台</h1><p class="page-intro">整理本机资料，按需生成每一版看板。</p></div>
+        <div class="header-actions"><span id="connection" class="connection"><i></i>正在连接本机</span><button id="refresh" class="button button-quiet" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5m-4-4a8 8 0 0 1 14-3l1 2M4 17l1 2a8 8 0 0 0 14-3"/></svg>刷新状态</button></div>
+      </header>
+
+      <section class="mode-notice" aria-label="当前生成模式">
+        <div class="mode-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18m-12 0v11m4-6h4m-4 3h2"/></svg></div>
+        <div><strong id="mode-title">正在读取生成模式</strong><p id="mode-description">生成时使用最新校验通过的上传版本，缺失来源和待确认指标会在看板中明确标注。</p></div>
+        <span id="mode-tag" class="mode-tag">等待后台就绪</span>
+      </section>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <a id="review-resume" class="review-resume" href="#review" hidden>继续处理待确认项</a>
+      <div class="workspace-summary" aria-label="后台状态">
+        <div><span>今日已更新</span><strong><b id="today-count">—</b><small id="today-total"> / 7 类</small></strong></div>
+        <div><span>资料准备</span><strong><b id="ready-count">—</b><small id="ready-total"> / 7 类</small></strong></div>
+        <div><span>已生成成品</span><strong><b id="generation-count">—</b><small> 份</small></strong></div>
+        <div><span>当前任务</span><strong class="summary-status" id="task-status">正在读取</strong></div>
+        <p>上传不会自动生成<br/>历史成品独立保留</p>
+      </div>
+
+      <section id="sources" class="section" aria-labelledby="sources-title">
+        <div class="update-panel" id="update-panel">
+          <div class="update-head">
+            <div><h2 id="sources-title">选好文件，系统自动读取日期并给出更新方式</h2><p id="batch-summary">六个板块都从这里更新：拖入或选择一个或多个 Excel，按工作表名识别板块。没选的板块沿用当前版本。</p></div>
+            <label class="update-add" id="batch-add" hidden>＋ 继续添加文件<input id="batch-more" type="file" accept=".xlsx" multiple hidden /></label>
+          </div>
+          <p class="update-tip">推荐每天导出：发票、动销、开瓶、库存「最近 7 天」；签约、宴席有新表时整份导出。导出范围须与当前数据一致（同一战区、全部产品），不一致的文件会被拦下。</p>
+          <label class="batch-drop" id="batch-drop">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M4 14v6h16v-6"/></svg>
+            <strong>拖入 Excel，或</strong>
+            <span class="button button-primary batch-pick">选择文件</span>
+            <small>可一次选择多个 .xlsx · <span id="upload-limit-hint">原文件保留</span></small>
+            <input id="batch-input" type="file" accept=".xlsx" multiple hidden />
+          </label>
+          <div id="batch-list" class="check-list" aria-live="polite"></div>
+          <div class="batch-actions" id="batch-actions" hidden><button id="batch-upload" class="button button-secondary" type="button" disabled>只更新数据</button><button id="batch-generate" class="button button-primary" type="button" disabled>确认更新并生成看板 →</button><span id="batch-hint"></span><button id="batch-clear" class="text-button" type="button" hidden>清空</button></div>
+          <p id="upload-capacity-description" class="update-capacity"></p>
+        </div>
+      </section>
+
+      <section id="receipt" class="section" aria-labelledby="receipt-title" hidden>
+        <div class="receipt-panel">
+          <div class="receipt-head"><h2 id="receipt-title">本次更新回执</h2><button id="receipt-close" class="text-button" type="button">收起</button></div>
+          <div id="receipt-grid" class="receipt-grid"></div>
+          <p id="receipt-foot" class="receipt-foot"></p>
+        </div>
+      </section>
+
+      <section id="current" class="section" aria-labelledby="current-title">
+        <div class="status-panel">
+          <div><h2 id="current-title">当前使用的资料</h2><p>只看状态；更新请在上方选择文件。提醒周期只用于“待更新”提示，不影响更新方式。</p></div>
+          <div class="status-table" role="table" aria-label="当前使用的资料">
+            <div class="status-row status-head" role="row"><span role="columnheader">板块</span><span role="columnheader">数据范围</span><span role="columnheader">版本</span><span role="columnheader">最近一次操作</span><span role="columnheader">提醒周期</span><span role="columnheader">状态</span></div>
+            <div id="module-grid"><div class="loading-card">正在读取资料状态…</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" class="review-panel" aria-labelledby="review-title">
+        <div class="section-heading"><span class="step-number">03</span><div><h2 id="review-title">本次数据检查</h2><p>集中处理重复记录和组织对应。已确认的结果保存在本机，原始 Excel 不改写。</p></div></div>
+        <p id="review-summary" class="review-summary">正在读取检查结果…</p>
+        <div class="review-toolbar"><button id="review-check-button" class="button button-secondary" type="button" data-review-action>检查全部当前来源</button><button id="review-export" class="button button-quiet" type="button" data-review-action>导出待核对清单</button><button id="review-later" class="button button-quiet" type="button">稍后继续处理</button></div>
+        <p class="review-saving-note">每组点击确认后即保存。暂未确认的勾选不会执行；退出后可从“继续处理”返回。</p>
+        <div id="review-notice" class="notice" role="status" aria-live="polite" hidden></div>
+        <div id="review-modules"></div>
+        <details class="review-records-details" data-open-key="records"><summary>处理记录与撤销</summary><p class="review-help">撤销后重新检查受影响来源。重新选择会影响之后生成的看板，已生成文件保留。</p><div id="review-records"></div></details>
+        <details class="review-backup" data-open-key="backup"><summary>备份与恢复处理设置</summary><p class="review-help">此备份只包含检查、处理决定、组织对应及操作记录，不包含原始 Excel 或历史 HTML。完整迁移需在关闭应用后另行备份本机数据目录。</p><button id="review-backup" class="button button-secondary" type="button" data-review-action>下载处理设置备份</button><div class="review-restore"><label class="review-label"><span>选择处理设置备份文件</span><input id="review-restore-file" type="file" accept=".json,application/json" /></label><p id="review-restore-name" class="review-help"></p><p class="review-help">恢复会重新核对本机来源与保存的决定；缺少对应来源时不能直接套用。恢复后请检查处理记录，再生成。</p><button id="review-restore-confirm" class="button button-secondary" type="button" disabled>确认恢复所选处理设置</button></div></details>
+      </section>
+
+      <section id="generate" class="generate-panel" aria-labelledby="generate-title">
+        <div class="generation-copy"><span class="eyebrow">04 · MANUAL GENERATION</span><h2 id="generate-title">准备好了，再生成。</h2><p id="generate-sources" class="generate-sources"></p><p>使用各板块最新有效上传版本，生成一份可离线打开的 v10 真实数据 HTML。每次生成保存为新文件，不覆盖历史成品。</p><div class="generation-footnote"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></svg><span>未处理项会阻止普通生成；也可明确生成待确认版本，相关汇总及关联指标不显示为完整结果。</span></div></div>
+        <div class="generation-action"><button id="generate-button" class="button button-primary" type="button" disabled>生成真实数据看板<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><button id="generate-pending-button" class="button button-pending" type="button" disabled>仍有问题，生成待确认版本</button><span id="generation-progress" role="status" aria-live="polite">等待后台就绪</span><a id="latest-output" class="text-link" target="_blank" rel="noopener" hidden>打开最新生成的看板 ↗</a></div>
+      </section>
+
+      <section id="history" class="section" aria-labelledby="history-title">
+        <div class="section-header"><div class="section-heading"><span class="step-number">05</span><div><h2 id="history-title">生成记录</h2><p>每次生成单独保存，可随时查看或下载已有成品。</p></div></div><span id="history-count" class="section-hint"></span></div>
+        <div id="generation-history" class="history-panel"><div class="empty-state"><strong>还没有生成记录</strong><p>上传资料并通过校验后，点击上方按钮生成真实数据看板。</p></div></div>
+      </section>
+
+      <section id="about" class="about-panel" aria-labelledby="about-title"><div><h2 id="about-title">资料与口径说明</h2><p>“联盟体”在看板统一称为“终端”。当前保留六个板块，不包含分销商动销；“经营目标”单独上传，用于发票、动销、开瓶的目标达成率。</p><p>所有板块从“更新数据”顶部选择文件：发票、动销、开瓶、库存按文件日期建议增量、范围更新或整份替换，签约、宴席整份替换；提交前核对变化和导出范围。文件无法使用时保留旧有效版本；处理决定可记住、撤销。</p></div><div><span class="storage-label">本机保存位置</span><code id="data-directory">正在读取…</code><p>上传资料与生成记录保存在本机。下载的真实数据 HTML 包含本次来源数据及筛选所需内容，可离线打开；旧演示成品在生成记录中单独标注。</p></div></section>
+      <footer><span>战区数字看板 <i></i> LOCAL WORKSPACE</span><span id="version-label">正在读取生成模式</span></footer>
+    </main>
+  </body>
+</html>

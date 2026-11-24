@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>战区经营看板</title>
+    <link rel="stylesheet" href="/board.css" />
+    <script src="/board.js" defer></script>
+  </head>
+  <body>
+    <header class="bar">
+      <h1>战区经营看板</h1>
+      <nav class="seg" aria-label="切换视图">
+        <button type="button" class="on" data-view="board">看板</button>
+        <button type="button" data-view="update">更新数据</button>
+        <button type="button" data-view="history">历史版本</button>
+      </nav>
+      <p class="meta" id="meta">正在连接本机后台…</p>
+    </header>
+    <main class="views">
+      <section class="view on" id="view-board" aria-label="最新看板">
+        <iframe id="board-frame" title="战区经营看板" hidden></iframe>
+        <div class="empty" id="board-empty">
+          <strong>还没有生成过看板</strong>
+          <p>先在“更新数据”里导入 Excel，再点“更新并生成看板”。</p>
+          <button type="button" class="btn btn-wine" data-go="update">去更新数据</button>
+        </div>
+      </section>
+      <section class="view" id="view-update" aria-label="更新数据">
+        <iframe id="update-frame" title="更新数据"></iframe>
+      </section>
+      <section class="view scroll" id="view-history" aria-label="历史版本">
+        <div class="wrap">
+          <div class="card">
+            <div class="card-head"><h2>历史版本</h2><p>每次生成单独保存；新上传不会改动已生成的版本。点“查看”在看板页打开。</p></div>
+            <table>
+              <thead><tr><th>生成时间</th><th>数据截至</th><th>使用的资料</th><th>状态</th><th></th></tr></thead>
+              <tbody id="history"><tr><td colspan="5" class="muted">正在读取…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

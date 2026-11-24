@@ -1,0 +1,210 @@
+/* Simplified home, scoped to overview; detail layouts remain unchanged. */
+body:has(.app-shell.overview-mode){background:#f1f3f6;overflow:auto}
+body:has(.app-shell.overview-mode)::before,.app-shell.overview-mode::before{display:none}
+.app-shell.overview-mode{--ov-num:"SF Pro Display","Inter","Helvetica Neue","Noto Sans",Arial,sans-serif;--ov-cn:"PingFang SC","HarmonyOS Sans SC","Noto Sans SC","Microsoft YaHei",sans-serif;position:relative;min-width:0;min-height:100dvh;width:100%;background:transparent;color:#18212b;font-family:var(--ov-cn);-webkit-font-smoothing:antialiased}
+.app-shell.overview-mode main{position:static;display:flex;flex-direction:column;justify-content:center;width:1180px;max-width:none;min-height:100dvh;height:auto;margin:0 auto;padding:16px 0}
+.app-shell.overview-mode main>*{max-width:none}
+.app-shell.overview-mode .rail,.app-shell.overview-mode main>footer,.app-shell.overview-mode .page-header p{display:none}
+.app-shell.overview-mode main>.page-header{display:flex;flex:none;flex-direction:row;align-items:flex-end;justify-content:space-between;width:100%;margin:0 0 24px;text-align:left}
+.app-shell.overview-mode .page-header .eyebrow{font-family:var(--ov-num);font-size:10.5px;font-weight:500;line-height:1.5;letter-spacing:.32em;color:#b8343c;margin:0}
+.app-shell.overview-mode .page-header h1{font-family:"Songti SC","Noto Serif CJK SC",serif;font-size:26px;font-weight:500;line-height:1.25;letter-spacing:.12em;color:#18212b;margin:8px 0 0}
+.app-shell.overview-mode .header-actions{position:static;display:flex;flex-direction:row;align-items:center;gap:16px;padding:0;font-size:11.5px;line-height:1.5}
+.app-shell.overview-mode .demo-badge{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:#8a94a1;font-size:11.5px;font-weight:400;letter-spacing:0;white-space:nowrap}
+.app-shell.overview-mode .demo-badge>span{width:6px;height:6px;border-radius:50%;background:#c9a85a;margin:0;box-shadow:none}
+.app-shell.overview-mode .definition-button{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#3a4552;font-size:11.5px;font-weight:400}
+.app-shell.overview-mode .definition-button svg{display:none}
+.app-shell.overview-mode main>.filter-bar{display:flex;flex:none;align-items:center;width:100%;height:44px;max-width:none;gap:0;margin:0;padding:0 8px 0 16px;border:1px solid #e6e9ee;border-radius:12px;background:#fff;box-shadow:none;backdrop-filter:none}
+.app-shell.overview-mode .filter-label{display:none}
+.app-shell.overview-mode .filter-bar label{display:flex;flex:1 1 0;align-items:center;gap:8px;min-width:0;height:100%;padding:0 16px;border-left:1px solid #edf0f3;line-height:1.5}
+.app-shell.overview-mode .filter-bar label:nth-child(2){border-left:0;padding-left:0}
+.app-shell.overview-mode .filter-bar label>span{display:inline;flex:none;color:#a8b0ba;font-size:11.5px;white-space:nowrap}
+.app-shell.overview-mode .filter-bar select{flex:1 1 0;min-width:0;width:100%;max-width:100%;padding:0;border:0;border-radius:0;background:transparent;font-family:var(--ov-num),var(--ov-cn);font-size:12.5px;font-weight:500;color:#18212b;text-overflow:ellipsis;cursor:pointer}
+.app-shell.overview-mode .filter-bar .reset-button{display:flex;flex:none;align-items:center;justify-content:center;width:36px;height:36px;padding:0;border:0;border-radius:8px;background:transparent;color:#8a94a1}
+.app-shell.overview-mode .filter-bar .reset-button svg{width:15px;height:15px}
+.app-shell.overview-mode main>.scope-line{display:flex;flex:none;align-items:center;justify-content:space-between;gap:24px;width:100%;min-height:16px;margin:8px 0 16px;font-size:11px;line-height:1.5;color:#a8b0ba}
+.app-shell.overview-mode main>.scope-line:empty{min-height:0;height:0;margin:0 0 16px}
+.app-shell.overview-mode .overview-shell{display:grid;flex:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 288px;grid-template-rows:432px 248px;gap:16px;width:1180px;height:auto;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.app-shell.overview-mode .overview-card{display:flex;flex-direction:column;min-width:0;min-height:0;margin:0;padding:24px;border:1px solid #e8ebef;border-radius:16px;background:#fff;box-shadow:none;color:#18212b;text-align:left}
+.app-shell.overview-mode .ov-invoice{grid-column:1;grid-row:1;--ov-accent:#b8343c;--ov-light:#e2a3a8}
+.app-shell.overview-mode .ov-movement{grid-column:2;grid-row:1;--ov-accent:#1f7a66;--ov-light:#9fcfc2}
+.app-shell.overview-mode .ov-operations{grid-column:3;grid-row:1;padding:8px 24px}
+.app-shell.overview-mode .ov-opening{grid-column:3;grid-row:2}
+.app-shell.overview-mode .ov-regional{grid-column:1 / 3;grid-row:2}
+.app-shell.overview-mode [role="button"],.app-shell.overview-mode button{cursor:pointer;font-family:inherit}
+.app-shell.overview-mode :is(button,[role="button"],select):focus-visible{outline:2px solid #687e88;outline-offset:3px}
+.app-shell.overview-mode .ov-heading{display:flex;flex:none;align-items:center;gap:8px;height:20px;min-width:0;margin:0;font-size:12.5px;font-weight:600;line-height:1.5;letter-spacing:0;color:#3a4552}
+.app-shell.overview-mode .ov-heading :is(h2,h3){margin:0;font:inherit;white-space:nowrap}
+.app-shell.overview-mode .ov-dot{display:inline-block;flex:none;width:6px;height:6px;border-radius:50%;background:#3a4552}
+.app-shell.overview-mode .ov-hero .ov-dot{background:var(--ov-accent)}
+.app-shell.overview-mode .ov-opening .ov-dot{background:#4a6f94}
+.app-shell.overview-mode .ov-action{display:inline-flex;flex:none;margin-left:auto;font-size:11px;font-weight:400;line-height:1.5;color:#a8b0ba;white-space:nowrap}
+.app-shell.overview-mode .ov-label{flex:none;margin:16px 0 0;font-size:11.5px;line-height:1.5;color:#8a94a1}
+.app-shell.overview-mode :is(.ov-value,.ov-secondary-value,.ov-stats b,.ov-kv b,.ov-number,.ov-growth,.ov-previous,.ov-month,.ov-rank){font-family:var(--ov-num),var(--ov-cn);font-variant-numeric:tabular-nums lining-nums}
+.app-shell.overview-mode .ov-hero-values{display:flex;align-items:flex-end;gap:24px;margin-top:8px;min-width:0}
+.app-shell.overview-mode .ov-value{margin:0;font-size:44px;font-weight:300;line-height:1;letter-spacing:-.035em;white-space:nowrap}
+.app-shell.overview-mode .ov-movement .ov-value{color:#16705d}
+.app-shell.overview-mode :is(.ov-value,.ov-secondary-value) small{font-family:var(--ov-cn);font-size:13px;font-weight:400;letter-spacing:0;color:#a8b0ba;margin-left:8px}
+.app-shell.overview-mode .ov-comparison{display:flex;flex-direction:column;gap:8px;padding-left:24px;border-left:1px solid #edf0f3;min-width:0;line-height:1.2;font-size:12px;color:#8a94a1;white-space:nowrap}
+.app-shell.overview-mode .ov-growth{display:inline-flex;align-items:baseline;gap:8px;font-size:10.5px;line-height:1.3;white-space:nowrap;color:#8a94a1;font-weight:400}
+.app-shell.overview-mode .ov-growth em{font-style:normal;font-weight:500}
+.app-shell.overview-mode .ov-comparison .ov-growth{font-size:12px}
+.app-shell.overview-mode .ov-hero-values .ov-growth em{font-size:14px}
+.app-shell.overview-mode .ov-previous small{font-size:inherit;margin-left:3px;font-weight:400}
+.app-shell.overview-mode .is-up{color:#1f7a66}
+.app-shell.overview-mode :is(.is-down,.is-negative,.is-alert){color:#b8343c}
+.app-shell.overview-mode .is-flat{color:#8a94a1}
+.app-shell.overview-mode :is([data-state="pending"],[data-state="missing"],[data-state="unavailable"],.is-pending){color:#c3c9d0}
+.app-shell.overview-mode .ov-stats{display:grid;flex:none;grid-template-columns:repeat(4,auto);justify-content:start;gap:0;margin-top:16px;padding-top:16px;border-top:1px solid #edf0f3;min-width:0}
+.app-shell.overview-mode .ov-stats>div{padding:0 16px;border-left:1px solid #edf0f3;white-space:nowrap}
+.app-shell.overview-mode .ov-stats>div:first-child{padding-left:0;border-left:0}
+.app-shell.overview-mode .ov-stats>div:last-child{padding-right:0}
+.app-shell.overview-mode .ov-stats>div>span:first-child{display:block;color:#a8b0ba;font-size:10.5px;line-height:1.3}
+.app-shell.overview-mode .ov-stats b{display:block;margin-top:8px;font-size:15px;font-weight:500;line-height:1.3;letter-spacing:-.01em}
+.app-shell.overview-mode .ov-stats small{font-size:10.5px;font-weight:400;color:#a8b0ba;margin-left:3px}
+.app-shell.overview-mode .ov-stats .ov-growth{margin-top:8px}
+.app-shell.overview-mode .ov-stats .ov-negative-amount,.app-shell.overview-mode .ov-negative-amount .is-negative{color:#a8761a}
+.app-shell.overview-mode .ov-negative-amount:before,.app-shell.overview-mode .ov-negative-swatch{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:repeating-linear-gradient(-45deg,#e7b75a 0 2px,#f6e3b8 2px 4px)}
+.app-shell.overview-mode .ov-negative-amount:before{margin-right:8px}
+.app-shell.overview-mode .ov-chart-header{display:flex;flex:none;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;color:#a8b0ba;font-size:10.5px;line-height:1.3}
+.app-shell.overview-mode .ov-chart-legend{display:flex;gap:16px}
+.app-shell.overview-mode .ov-chart-legend>span{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.app-shell.overview-mode .ov-chart-legend i{display:inline-block;width:8px;height:8px;border-radius:2px}
+.app-shell.overview-mode .ov-year-swatch{background:var(--ov-accent)}
+.app-shell.overview-mode .ov-prior-swatch{background:#e3e6ea}
+.app-shell.overview-mode .ov-chart{display:flex;flex:1;gap:8px;min-height:0;margin-top:16px}
+.app-shell.overview-mode .ov-month{display:flex;flex:1;flex-direction:column;align-items:stretch;gap:8px;min-width:0;min-height:0;padding:0;border:0;border-radius:0;background:transparent;text-align:center}
+.app-shell.overview-mode .ov-column{position:relative;display:block;flex:1;min-height:0;width:100%}
+.app-shell.overview-mode .ov-net-lane{position:absolute;inset:0 0 30px}
+.app-shell.overview-mode .ov-net-lane>i{position:absolute;display:block;border-radius:3px 3px 0 0}
+.app-shell.overview-mode .ov-prior-net{left:0;right:0;background:#eef0f3}
+.app-shell.overview-mode .ov-net{left:22%;right:22%;background:var(--ov-light)}
+.app-shell.overview-mode .is-current .ov-net{background:var(--ov-accent)}
+.app-shell.overview-mode .ov-net.is-negative{background:#b8343c;border-radius:0 0 3px 3px}
+.app-shell.overview-mode .ov-zero{position:absolute;left:0;right:0;height:0;border-top:1px solid #dfe3e8;z-index:2}
+.app-shell.overview-mode .ov-negative-lane{position:absolute;left:0;right:0;bottom:0;height:30px}
+.app-shell.overview-mode .ov-deduction{position:absolute;top:0;left:22%;right:22%;display:block;border-radius:0 0 2px 2px;background:repeating-linear-gradient(-45deg,#e7b75a 0 2px,#f6e3b8 2px 4px)}
+.app-shell.overview-mode .is-current .ov-deduction{background:repeating-linear-gradient(-45deg,#c98d1e 0 2px,#efcf8c 2px 4px)}
+.app-shell.overview-mode .ov-net-label{position:absolute;left:50%;transform:translateX(-50%);padding-bottom:8px;font-size:10px;font-weight:500;line-height:1;white-space:nowrap}
+.app-shell.overview-mode .ov-negative-label{position:absolute;top:0;left:100%;font-size:10px;font-weight:500;color:#a8761a;line-height:1;white-space:nowrap}
+.app-shell.overview-mode .ov-month:last-child .ov-negative-label{left:auto;right:100%}
+.app-shell.overview-mode .ov-month-label{font-size:10px;line-height:1;color:#a8b0ba;white-space:nowrap}
+.app-shell.overview-mode .is-current .ov-month-label{font-weight:600;color:#18212b}
+.app-shell.overview-mode .ov-missing{position:absolute;inset:0;display:grid;place-items:center;color:#c3c9d0;font-size:10px}
+.app-shell.overview-mode .ov-chart-note{flex:none;line-height:1;font-size:10px;color:#a8b0ba;margin-top:8px}
+.app-shell.overview-mode .ov-operation{display:flex;flex:1;flex-direction:column;justify-content:center;min-height:0;width:100%;padding:0;border:0;border-top:1px solid #edf0f3;border-radius:0;background:none;color:inherit;text-align:left}
+.app-shell.overview-mode .ov-operation:first-child{border-top:0}
+.app-shell.overview-mode .ov-operation-heading{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#3a4552}
+.app-shell.overview-mode .ov-secondary-value{display:block;font-size:26px;font-weight:300;line-height:1.1;letter-spacing:-.03em;margin:8px 0 0;white-space:nowrap}
+.app-shell.overview-mode .ov-secondary-value small{font-size:11px}
+.app-shell.overview-mode .ov-kv{display:flex;gap:16px;margin-top:8px;font-size:10.5px;color:#a8b0ba;line-height:1.5;white-space:nowrap}
+.app-shell.overview-mode .ov-kv b{font-size:11.5px;font-weight:500;margin-left:8px}
+.app-shell.overview-mode .ov-kv small{font-size:10px;margin-left:3px}
+.app-shell.overview-mode .ov-tag{background:none;border:0;padding:0;font-size:10.5px;color:#a8b0ba}
+.app-shell.overview-mode .ov-tag [data-state="available"]{font-size:11.5px;color:#18212b;font-weight:500}
+.app-shell.overview-mode .ov-kv b[data-state="available"]{color:#18212b}
+.app-shell.overview-mode .ov-region-header{display:flex;align-items:center;gap:16px;min-height:20px}
+.app-shell.overview-mode .ov-region-note{font-size:10.5px;color:#a8b0ba;white-space:nowrap}
+.app-shell.overview-mode .ov-region-tabs{display:flex;gap:8px;margin-left:auto;white-space:nowrap}
+.app-shell.overview-mode .ov-region-tabs button{padding:3px 8px;border:0;border-radius:6px;background:none;box-shadow:none;font-size:11px;font-weight:400;color:#8a94a1}
+.app-shell.overview-mode .ov-region-tabs button[aria-selected="true"]{background:#f1f3f6;color:#18212b;font-weight:500}
+.app-shell.overview-mode .ov-region-columns,.app-shell.overview-mode .ov-region-row{display:grid;grid-template-columns:24px 136px minmax(0,1fr) 96px 96px 72px;align-items:center;gap:16px;width:100%}
+.app-shell.overview-mode .ov-region-columns{flex:none;margin-top:16px;padding:0 0 8px;border-bottom:1px solid #edf0f3;color:#a8b0ba;font-size:10.5px;line-height:1.3}
+.app-shell.overview-mode .ov-region-columns>span:nth-last-child(-n+3){text-align:right}
+.app-shell.overview-mode .ov-pair-legend{display:flex;gap:16px}
+.app-shell.overview-mode .ov-pair-legend>span{display:flex;align-items:center;gap:8px}
+.app-shell.overview-mode .ov-pair-legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.app-shell.overview-mode .ov-region-list{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#c3c9d0 transparent}
+.app-shell.overview-mode .ov-region-row{height:calc(100% / 3);min-height:calc(100% / 3);padding:0;border:0;border-bottom:1px solid #f4f5f7;border-radius:0;background:none;text-align:left;outline-offset:-2px}
+.app-shell.overview-mode .ov-region-row:disabled{cursor:default}
+.app-shell.overview-mode .ov-region-row>*{min-width:0}
+.app-shell.overview-mode .ov-region-row:last-child{border-bottom:0}
+.app-shell.overview-mode .ov-rank{font-size:11px;color:#c3c9d0}
+.app-shell.overview-mode .ov-region-name{font-size:12.5px;font-weight:500;line-height:1.4}
+.app-shell.overview-mode .ov-region-name strong{display:block;font:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-shell.overview-mode .ov-region-name>small{display:block;margin:0;font-size:10px;color:#a8b0ba;font-weight:400;line-height:1.4}
+.app-shell.overview-mode .ov-region-bars{display:flex;flex-direction:column;gap:8px}
+.app-shell.overview-mode .ov-region-bar-track{display:block;position:relative;height:6px;background:#f4f5f7;border-radius:3px}
+.app-shell.overview-mode .ov-region-bar-track i{position:absolute;top:0;display:block;height:6px;border-radius:3px;max-width:100%}
+.app-shell.overview-mode .ov-region-bar-track s{position:absolute;inset:0 auto 0;border-left:1px solid #c3c9d0}
+.app-shell.overview-mode .ov-region-bar-track em{display:block;position:absolute;inset:0;line-height:6px;text-align:center;font-size:10px;color:#c3c9d0;font-style:normal}
+.app-shell.overview-mode .ov-invoice-bar{background:#d27a80}
+.app-shell.overview-mode .ov-movement-bar{background:#5aa592}
+.app-shell.overview-mode .ov-signed-bar{background:#c4ad83}
+.app-shell.overview-mode .ov-effectiveCount-bar{background:#5aa592}
+.app-shell.overview-mode .ov-number{font-size:13.5px;font-weight:500;text-align:right;line-height:1.3;white-space:nowrap}
+.app-shell.overview-mode .ov-number>.ov-growth{display:flex;justify-content:flex-end;margin:0;font-size:10.5px}
+.app-shell.overview-mode .ov-number small{margin-left:3px;font-size:10.5px;font-weight:400}
+.app-shell.overview-mode .ov-region-opening :is(.ov-region-columns,.ov-region-row){grid-template-columns:24px 1fr 160px 112px}
+.app-shell.overview-mode .ov-region-foot{display:flex;flex:none;justify-content:space-between;gap:16px;margin-top:8px;font-size:10.5px;color:#a8b0ba;line-height:1.3}
+.app-shell.overview-mode .ov-opening-value{display:block;margin-top:16px}
+.app-shell.overview-mode .ov-opening .ov-secondary-value{margin:0}
+.app-shell.overview-mode .ov-comparison-inline{flex-direction:row;align-items:baseline;gap:8px;border:0;padding:0;margin-top:8px;font-size:10.5px}
+.app-shell.overview-mode .ov-comparison-inline .ov-growth{font-size:11px}
+.app-shell.overview-mode .ov-comparison-inline .ov-previous{border-left:1px solid #edf0f3;padding-left:8px}
+.app-shell.overview-mode .ov-sparkline{display:block;flex:1;width:100%;min-height:0;margin-top:16px;overflow:visible}
+.app-shell.overview-mode .ov-day-axis{display:flex;justify-content:space-between;margin-top:8px;color:#a8b0ba;font-size:10px;line-height:1}
+.app-shell.overview-mode .ov-opening-legend{display:flex;gap:16px;margin-top:8px;font-size:10.5px;color:#a8b0ba;line-height:1.3;white-space:nowrap}
+.app-shell.overview-mode .ov-opening-legend i{display:inline-block;width:14px;height:0;border-top:1.6px solid #4a6f94;margin-right:8px}
+.app-shell.overview-mode .ov-opening-legend i.is-prior{border-top:1.2px dashed #aab3bd}
+.app-shell.overview-mode .ov-spark-empty{display:flex;flex:1;align-items:center;color:#c3c9d0;margin-top:16px}
+.app-shell.overview-mode .ov-empty{margin:8px 0;color:#a8b0ba;font-size:11px}
+@media(max-width:1211px){.app-shell.overview-mode{min-width:1212px}.app-shell.overview-mode main{margin:0 16px}}
+@media(prefers-reduced-motion:reduce){.app-shell.overview-mode *{transition:none!important;scroll-behavior:auto!important}}
+
+.app-shell.overview-mode .ov-day-change{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:8px;padding:6px 8px;border-radius:6px;background:#f5f7fa;font-size:10.5px;line-height:1.3;white-space:nowrap;min-width:0}
+.app-shell.overview-mode .ov-day-change .ov-growth em{font-size:11.5px}
+.app-shell.overview-mode .ov-day-values{font-family:var(--ov-num),var(--ov-cn);font-variant-numeric:tabular-nums;color:#3a4552;overflow:hidden;text-overflow:ellipsis}
+.app-shell.overview-mode .ov-day-values small{font-size:inherit;color:#8a94a1}
+
+/* Filter area (2026-11-23, compact): start and end as two small boxes, one
+   quick-pick group that applies at once (incl. 恢复默认), 应用 and a full reset. */
+.period-bar{display:flex;align-items:center;gap:10px;font-size:12px;color:#18212b}
+.period-title{display:flex;align-items:center;gap:8px;color:#5f6b78;font-size:12px;white-space:nowrap}
+.period-title svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6}
+.period-range{display:flex;align-items:center;gap:6px}
+.period-date{display:flex;align-items:center;gap:6px;height:32px;padding:0 6px 0 10px;border:1px solid #dfe3e8;border-radius:9px;background:#fff;cursor:text;min-width:0}
+.period-date>span{color:#8a94a1;font-size:11px;white-space:nowrap}
+.period-date input{border:0;padding:0;background:transparent;color:#18212b;font:inherit;font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums;min-width:0;width:116px}
+.period-date input:focus{outline:none}
+.period-date:focus-within{border-color:#c99ba0;box-shadow:0 0 0 3px #f6e6e8}
+.period-arrow{color:#a8b0ba;font-size:12px}
+.period-quick{display:flex;background:#f1f3f6;border-radius:9px;padding:2px}
+.period-quick button{height:28px;padding:0 12px;border:0;border-radius:7px;background:transparent;color:#3a4552;font-size:12px;cursor:pointer;white-space:nowrap}
+.period-quick button:hover{color:#8f2933}
+.period-quick button.is-active{background:#fff;color:#8f2933;font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.period-apply{height:32px;padding:0 16px;border:0;border-radius:9px;background:#8f2933;color:#fff;font-size:12px;cursor:pointer;white-space:nowrap}
+.period-apply:disabled{background:#d9c3c6;cursor:not-allowed}
+.period-clear{width:32px;height:32px;flex:none;border:1px solid #e1e5ea;border-radius:9px;background:#fff;color:#76838e;font-size:15px;line-height:1;cursor:pointer}
+.period-clear:hover{color:#8f2933;border-color:#e3d3d5}
+.period-note{margin-left:auto;color:#8a94a1;font-size:11.5px;white-space:nowrap}
+.period-note.is-error{color:#b8343c}
+/* Overview: two rows inside one white card; the shell reset is replaced by ↺. */
+.app-shell.overview-mode main>.filter-bar{flex-wrap:wrap;height:auto;padding:0;gap:0;border-radius:14px}
+.app-shell.overview-mode main>.filter-bar>.period-bar{order:-1;flex:1 0 100%;height:52px;padding:0 16px;border-bottom:1px solid #eef0f3}
+.app-shell.overview-mode main>.filter-bar>.filter-label{display:flex;height:46px;align-items:center;gap:8px;padding:0 16px;font-size:12px;color:#5f6b78;border:0}
+.app-shell.overview-mode main>.filter-bar>.filter-label svg{width:16px;height:16px}
+.app-shell.overview-mode main>.filter-bar>label{height:46px;border-left:1px solid #eef0f3;padding:0 16px}
+.app-shell.overview-mode .filter-bar label:nth-child(2),.app-shell.overview-mode .filter-bar label:nth-child(3){border-left:1px solid #eef0f3;padding-left:16px}
+.app-shell.overview-mode main>.filter-bar>.reset-button{display:none}
+.app-shell.overview-mode .period-bar .period-clear{order:9}
+/* Details: compact left card without a title row. Row 1: start → end;
+   row 2: quick picks and ↺; then two-by-two single-line dropdowns. */
+.app-shell.detail-mode main>.filter-bar{grid-template-columns:repeat(2,minmax(0,1fr));position:relative;top:14px;gap:0 20px;padding:16px 20px 10px;border-radius:19px;background:linear-gradient(140deg,#fff,#f7f9fa)}
+.app-shell.detail-mode main>.filter-bar>.filter-label,.app-shell.detail-mode main>.filter-bar>.reset-button{display:none}
+.app-shell.detail-mode main>.filter-bar>.period-bar{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 6px;padding:0 0 10px;margin-bottom:2px;border-bottom:1px solid #e9edf1}
+.app-shell.detail-mode .period-bar .period-title,.app-shell.detail-mode .period-bar .period-note{display:none}
+.app-shell.detail-mode .period-bar .period-range{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr);gap:4px}
+.app-shell.detail-mode main>.filter-bar .period-date{height:29px;padding:0 0 5px;background:transparent;border:0;border-bottom:1px solid #c5cfd6;border-radius:0}
+.app-shell.detail-mode .period-bar .period-date input{width:100%;font-size:14px}
+.app-shell.detail-mode .period-bar .period-arrow{text-align:center}
+.app-shell.detail-mode .period-bar .period-quick{display:flex;justify-self:start}
+.app-shell.detail-mode .period-bar .period-quick button{height:26px;padding:0 11px;font-size:12px}
+.app-shell.detail-mode .period-bar .period-clear{width:30px;height:26px;align-self:center;border:0;border-left:1px solid #d9e1e5;border-radius:0;background:transparent}
+.app-shell.detail-mode main>.filter-bar>label{flex-direction:row;align-items:center;gap:8px;height:32px;padding:0;border-bottom:1px dashed #edf0f4}
+.app-shell.detail-mode main>.filter-bar>label:nth-last-of-type(-n+2){border-bottom:0}
+.app-shell.detail-mode main>.filter-bar>label>span{min-width:44px;font-size:11px;color:#8a94a1}
+.up-level{display:inline-flex;align-items:center;gap:6px;margin-left:10px;padding:2px 10px;border:1px solid #e3d3d5;border-radius:999px;background:#fff;color:#8f2933;font-size:11px;line-height:1.6;cursor:pointer;white-space:nowrap}
+.up-level small{color:#8a94a1;font-size:10.5px}
+.up-level:hover{background:#fbf3f4}
+.up-level.is-compact{margin-left:8px;padding:1px 8px}
+.v10-up-level{margin:0 0 10px}
