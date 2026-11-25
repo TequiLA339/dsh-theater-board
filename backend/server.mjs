@@ -93,20 +93,23 @@ async function readJson(request, maxBytes = 8 * 1048576) {
 }
 
 /**
- * Extra page origins allowed to embed this backend (DSH plugin mode only). Only
- * loopback http(s) origins are accepted; the default (none) keeps same-origin
- * framing for source and desktop launches.
+ * Extra page origins allowed to embed this backend (DSH plugin mode only):
+ * loopback http(s) origins (DSH Web) and exactly `dsh-app://app` (the DSH
+ * desktop window). The default (none) keeps same-origin framing for source and
+ * desktop launches.
  */
 const LOOPBACK_ORIGIN = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d{1,5})?$/;
+export const DSH_DESKTOP_ORIGIN = 'dsh-app://app';
+const embedOrigin = origin => typeof origin === 'string' && (LOOPBACK_ORIGIN.test(origin) || origin === DSH_DESKTOP_ORIGIN);
 export function frameAncestorList(extra = []) {
   const origins = typeof extra === 'function' ? extra() : extra;
-  return ["'self'", ...new Set((origins || []).filter(origin => typeof origin === 'string' && LOOPBACK_ORIGIN.test(origin)))];
+  return ["'self'", ...new Set((origins || []).filter(embedOrigin))];
 }
 
 export async function createAdminServer({ port = 4180, dataDir = DEFAULT_DATA_DIR, frameAncestors = [] } = {}) {
   dataDir = resolve(dataDir);
   const embedded = typeof frameAncestors === 'function' || frameAncestors.length > 0;
-  for (const origin of typeof frameAncestors === 'function' ? [] : frameAncestors) if (!LOOPBACK_ORIGIN.test(origin)) throw new Error(`嵌入来源只能是本机回环地址：${origin}`);
+  for (const origin of typeof frameAncestors === 'function' ? [] : frameAncestors) if (!embedOrigin(origin)) throw new Error(`嵌入来源只能是本机回环地址或 ${DSH_DESKTOP_ORIGIN}：${origin}`);
   const ancestors = () => frameAncestorList(frameAncestors).join(' ');
   const store = await openStore(dataDir);
   const token = randomBytes(32).toString('hex');
@@ -166,7 +169,14 @@ export async function createAdminServer({ port = 4180, dataDir = DEFAULT_DATA_DI
     const hosts = [`127.0.0.1:${actualPort}`, `localhost:${actualPort}`];
     if (!hosts.includes(request.headers.host)) throw new RequestError(403, '仅支持通过本机地址访问。');
     if (request.headers.origin && !hosts.map(host => `http://${host}`).includes(request.headers.origin)) throw new RequestError(403, '不接受其他网页发起的请求。');
-    if (request.headers['sec-fetch-site'] === 'cross-site') throw new RequestError(403, '不接受跨站请求。');
+    // Plugin mode: the DSH desktop window (dsh-app://app) is another site, so the
+    // iframe's top-level page load arrives cross-site. Only that read-only GET
+    // navigation of an HTML page into a frame is admitted; rendering is still limited by CSP
+    // frame-ancestors, and every fetch/write from the page is same-origin.
+    const pagePath = new URL(request.url, 'http://127.0.0.1').pathname;
+    const framePage = ['/', '/board', '/admin'].includes(pagePath) || /^\/api\/generations\/[a-f0-9-]{36}\/view$/.test(pagePath);
+    const frameNavigation = embedded && !write && framePage && request.headers['sec-fetch-mode'] === 'navigate' && request.headers['sec-fetch-dest'] === 'iframe';
+    if (request.headers['sec-fetch-site'] === 'cross-site' && !frameNavigation) throw new RequestError(403, '不接受跨站请求。');
     if (write && request.headers['x-local-token'] !== token) throw new RequestError(403, '页面会话已失效，请刷新后台后重试。');
     if (write && closing) throw new RequestError(503, '后台正在关闭，请稍后重新打开。');
   }

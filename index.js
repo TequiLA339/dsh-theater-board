@@ -4,7 +4,7 @@ import http from 'node:http';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { DEFAULT_PORT, dshOrigins, problemPage, resolveSettings, startupProblem } from './lib/settings.mjs';
+import { DEFAULT_PORT, frameOriginsFor, problemPage, resolveSettings, startupProblem } from './lib/settings.mjs';
 import { createBoardQueries } from './lib/tools.mjs';
 import { toolDefinitions } from './lib/tool-definitions.mjs';
 
@@ -33,12 +33,14 @@ export function backendEntry() {
 }
 
 /** Start the backend, or a static explanation page on the same port when it cannot start. */
+const embedOrigin = origin => typeof origin === 'string' && (/^https?:\/\/(127\.0\.0\.1|localhost)(:\d{1,5})?$/.test(origin) || origin === 'dsh-app://app');
+
 /** Volatile config fields arrive as refs with get(); plain values pass through. */
 const plain = config => Object.fromEntries(Object.entries(config || {}).map(([key, value]) => [key, typeof value?.get === 'function' ? value.get() : value]));
 
 export async function startBoard(config = {}, { frameOrigins = () => [], log = console } = {}) {
   const settings = resolveSettings(plain(config));
-  const ancestors = () => [...frameOrigins(), ...settings.extraFrameAncestors];
+  const ancestors = () => [...new Set([...frameOrigins(), ...settings.extraFrameAncestors].filter(embedOrigin))];
   try {
     const { createAdminServer } = await import(pathToFileURL(backendEntry()).href);
     const backend = await createAdminServer({ port: settings.port, dataDir: settings.dataDir, frameAncestors: ancestors });
@@ -76,9 +78,11 @@ export function apply(ctx, config = {}) {
     web = webCtx.webServer;
     webCtx.effect(() => () => { web = null; });
   });
+  // Always admit the desktop window (dsh-app://app); add the DSH Web origin once known.
   const frameOrigins = () => {
-    if (!web) return [];
-    try { return dshOrigins(web.getOrigin()); } catch { return []; }
+    let origin = null;
+    try { origin = web ? web.getOrigin() : null; } catch {}
+    return frameOriginsFor(origin);
   };
   // ctx.effect owns the backend: its disposer runs when the row is disabled,
   // uninstalled or hot-replaced, and waits for uploads/generation to settle.

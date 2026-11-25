@@ -92,7 +92,7 @@ export async function generateDashboard({ project, dataDir, sourceVersions, outp
   await verifyInputs();
   onStage('正在读取最新有效上传并计算真实数据');
   const build = dependencies.buildSourcePayload ?? buildSourcePayload;
-  const { payload, report } = await build({ dataDir, decisionsFile: decisionBefore ? decisionsFile : undefined, sourceVersions, allowPending });
+  const { payload, report } = await build({ dataDir, decisionsFile: decisionBefore ? decisionsFile : undefined, sourceVersions, allowPending, rowCache: true });
   if (!payload?.sources || !payload?.modules || report?.activeChangedDuringRead) throw new Error('有效上传版本读取不完整或已发生变化，请重新生成。');
   if (report.decisionError) throw new Error(report.decisionError);
   for (const [id, expected] of Object.entries(sourceVersions)) {

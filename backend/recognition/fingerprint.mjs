@@ -21,6 +21,12 @@ export async function validationFingerprint(moduleId, root = backendRoot) {
   await walk('recognition');
   await walk(`modules/${moduleId}`);
   const hash = createHash('sha256');
-  for (const file of files.sort()) hash.update(file).update('\0').update(await readFile(resolve(root, file))).update('\0');
+  for (const file of files.sort()) {
+    let bytes;
+    // npm/Git-installed packages (DSH plugin) never carry package-lock.json; the hash is unchanged when it exists.
+    try { bytes = await readFile(resolve(root, file)); }
+    catch (error) { if (error.code === 'ENOENT' && file === '../package-lock.json') continue; throw error; }
+    hash.update(file).update('\0').update(bytes).update('\0');
+  }
   return hash.digest('hex');
 }

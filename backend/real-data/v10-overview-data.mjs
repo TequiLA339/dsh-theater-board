@@ -3,8 +3,17 @@ export function createV10OverviewData(model, presentation) {
   const cache = new WeakMap(), regionalCache = new Map();
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const text = value => typeof value === 'string' && value.trim().length > 0;
-  const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
-    && Number.isFinite(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+  // Pure per string; memoized because comparisons re-check every row's date.
+  const validDates = new Map();
+  const validDate = value => {
+    if (typeof value !== 'string') return false;
+    let result = validDates.get(value);
+    if (result === undefined) {
+      result = /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+      validDates.set(value, result);
+    }
+    return result;
+  };
   const keyFor = filters => JSON.stringify([filters.month, filters.period, filters.start, filters.end, filters.region, filters.office, filters.unit, filters.product]);
   const periodOf = filters => model.periodOf ? model.periodOf(filters) : { mode: 'month', start: `${filters.month}-01`, end: null, month: filters.month };
   const pending = (label, unit, reason, state = 'pending') => ({ label, unit, value: null, state, reason });

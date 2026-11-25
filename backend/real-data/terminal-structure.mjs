@@ -4,9 +4,24 @@ export function buildTerminalStructure({ terminalRows = [], movementRows = [], a
   const names = ['品味舍得', '舍之道·地道', '庆典舍得', '水晶舍得', '智慧舍得', '舍之道·天道', '舍之道·君道', '其他'];
   const keys = ['pinwei', 'didao', 'qingdian', 'shuijing', 'zhihui', 'tiandao', 'jundao', 'other'];
   const clean = value => String(value ?? '').trim();
-  const compact = value => clean(value).replace(/[\s·・•\-—_（）()]/g, '').toUpperCase();
+  const compacted = new Map();
+  const compact = value => {
+    const text = clean(value);
+    let result = compacted.get(text);
+    if (result === undefined) { result = text.replace(/[\s·・•\-—_（）()]/g, '').toUpperCase(); compacted.set(text, result); }
+    return result;
+  };
   const finite = value => typeof value === 'number' && Number.isFinite(value);
-  const date = value => { const text = clean(value); if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return null; const parsed = new Date(`${text}T00:00:00Z`); return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === text ? text : null; };
+  // Pure per text value; memoized because every row of every filter change is parsed.
+  const dates = new Map();
+  const date = value => {
+    const text = clean(value);
+    if (dates.has(text)) return dates.get(text);
+    let result = null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) { const parsed = new Date(`${text}T00:00:00Z`); result = Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === text ? text : null; }
+    dates.set(text, result);
+    return result;
+  };
   const validMonth = /^\d{4}-(0[1-9]|1[0-2])$/.test(month || '');
   const monthLast = validMonth ? new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0)).toISOString().slice(0, 10) : null;
   // A custom range ends inside its last month; terminal status is taken at that end date.

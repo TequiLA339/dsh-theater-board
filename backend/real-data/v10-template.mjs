@@ -12,7 +12,7 @@ import { createV10Overview } from './v10-overview.mjs';
 export { createV10Model } from './v10-model.mjs';
 export const V10_TEMPLATE_SHA256 = 'b58e609411d0b9ab2d77d7079ea580e8210d11946999a8c11cea1fc34bf9b886';
 export const V10_SCRIPT_SHA256 = 'd11a689940d80a4010c5f45786ac2da7d3106cb8309216b4df2d55c8dac4599c';
-export const V10_RENDERER_VERSION = 18;
+export const V10_RENDERER_VERSION = 19;
 export const V10_SHELL_SHA256 = 'd5118e6e2ec447cc22992c348e18ae719bfbda959a2b694352843c120522a5f1';
 const APPLICATION_MARKER = '/*__V10_APPLICATION__*/';
 const IDS = ['invoice', 'movement', 'opening', 'terminal', 'inventory', 'banquet'];

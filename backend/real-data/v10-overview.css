@@ -208,3 +208,57 @@ body:has(.app-shell.overview-mode)::before,.app-shell.overview-mode::before{disp
 .up-level:hover{background:#fbf3f4}
 .up-level.is-compact{margin-left:8px;padding:1px 8px}
 .v10-up-level{margin:0 0 10px}
+
+/* 随窗口自适应（2026-11-25 用户确认预览）：总览宽屏三列、≤1100 两列、≤760 单列；
+   详情 ≥760 保持左右独立滚动，≤760 上下排列。外壳 v10-shell.html 不改，此处覆盖其固定宽度。 */
+@media(max-width:1000px){.app-shell{min-width:0}}
+@media(max-width:1211px){.app-shell.overview-mode{min-width:0}.app-shell.overview-mode main{margin:0 auto}}
+.app-shell.overview-mode main{width:auto;max-width:1480px;margin:0 auto;padding:16px clamp(12px,2.4vw,32px);justify-content:flex-start}
+.app-shell.overview-mode .page-header{flex-wrap:wrap;gap:8px 16px}
+.app-shell.overview-mode .filter-bar{flex-wrap:wrap;height:auto}
+.app-shell.overview-mode .filter-bar .period-bar{flex:1 1 100%;flex-wrap:wrap;row-gap:8px;height:auto;min-height:52px;padding-top:8px;padding-bottom:8px}
+.app-shell.overview-mode .filter-bar>label{flex:1 1 200px;min-width:0}
+.app-shell.overview-mode .overview-shell{width:auto;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(260px,300px);grid-template-rows:auto auto}
+.app-shell.overview-mode .ov-hero{height:auto;min-height:432px}
+.app-shell.overview-mode :is(.ov-regional,.ov-opening,.ov-operations){height:auto;min-height:248px}
+.app-shell.overview-mode .ov-region-list{flex:none;max-height:300px;overflow-y:auto}
+.app-shell.overview-mode .ov-region-row{height:auto;min-height:52px;padding:6px 0}
+.app-shell.overview-mode .ov-operation{flex:1 0 auto;min-height:104px;padding:12px 0}
+@media(max-width:1100px){
+  .app-shell.overview-mode .overview-shell{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .app-shell.overview-mode .ov-invoice{grid-column:1;grid-row:1}
+  .app-shell.overview-mode .ov-movement{grid-column:2;grid-row:1}
+  .app-shell.overview-mode .ov-regional{grid-column:1 / -1;grid-row:2}
+  .app-shell.overview-mode .ov-operations{grid-column:1;grid-row:3}
+  .app-shell.overview-mode .ov-opening{grid-column:2;grid-row:3}
+}
+@media(max-width:760px){
+  .app-shell.overview-mode .overview-shell{grid-template-columns:minmax(0,1fr)}
+  .app-shell.overview-mode :is(.ov-invoice,.ov-movement,.ov-regional,.ov-operations,.ov-opening){grid-column:1}
+  .app-shell.overview-mode .ov-invoice{grid-row:1}
+  .app-shell.overview-mode .ov-movement{grid-row:2}
+  .app-shell.overview-mode .ov-regional{grid-row:3}
+  .app-shell.overview-mode .ov-operations{grid-row:4}
+  .app-shell.overview-mode .ov-opening{grid-row:5}
+  .app-shell.overview-mode :is(.ov-region-columns,.ov-region-row){grid-template-columns:20px minmax(90px,120px) minmax(0,1fr) 72px 72px;gap:10px}
+  .app-shell.overview-mode :is(.ov-region-columns,.ov-region-row)>:last-child{display:none}
+}
+.app-shell.detail-mode .details-panel{min-width:0}
+@media(max-width:1000px){
+  .app-shell.detail-mode main{grid-template-columns:minmax(280px,320px) minmax(0,1fr);padding:16px 16px 12px}
+  .app-shell.detail-mode .v10-details .detail-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .app-shell.detail-mode main>.filter-bar>label{flex-direction:column;align-items:stretch;gap:2px;height:auto}
+  .app-shell.detail-mode main>.filter-bar>label select{width:100%}
+  .app-shell.detail-mode .period-bar .period-range{grid-template-columns:minmax(0,1fr)}
+  .app-shell.detail-mode .period-bar .period-arrow{display:none}
+}
+@media(max-width:760px){
+  .app-shell.detail-mode main{display:flex;flex-direction:column;height:auto;min-height:0;padding:12px}
+  .app-shell.detail-mode main>.filter-bar{position:static;width:100%}
+  .app-shell.detail-mode main>.filter-bar>label{flex-direction:row;align-items:center}
+  .app-shell.detail-mode .period-bar .period-range{grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr)}
+  .app-shell.detail-mode .period-bar .period-arrow{display:block}
+  .app-shell.detail-mode .focus-layout{display:block;width:100%}
+  .app-shell.detail-mode .focus-summary{position:static;display:flex;flex:none;flex-direction:column;gap:12px;width:100%;height:auto;min-height:0;padding:0 0 12px;background:none;overflow:hidden;container-type:inline-size}
+  .app-shell.detail-mode .details-panel{width:auto;max-width:100%;height:auto;margin:0;overflow-x:auto;overflow-y:visible}
+}

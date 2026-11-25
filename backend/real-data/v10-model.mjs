@@ -52,10 +52,20 @@ export function createV10Model(payload, terminalBuilder = buildTerminalStructure
     fullLabels.set(key, parts.map(value => value || '未提供').join(' / '));
     return key;
   };
+  // Records of one organization share one orgPath array after unpacking; its keys
+  // (and label registrations) are computed once per path instead of once per row.
+  const orgKeys = new WeakMap();
+  const keysFor = row => {
+    const cached = row.orgPath && orgKeys.get(row.orgPath);
+    if (cached) return cached;
+    const parts = partsFor(row);
+    const result = { region: identity(parts.slice(0, 4)), office: identity(parts.slice(0, 5)), unit: identity(parts) };
+    if (row.orgPath) orgKeys.set(row.orgPath, result);
+    return result;
+  };
   const orgMap = new Map(), categoryMap = new Map();
   for (const id of ids) for (const row of payload.modules[id].records) {
-    const parts = partsFor(row);
-    const region = identity(parts.slice(0, 4)), office = identity(parts.slice(0, 5)), unit = identity(parts);
+    const { region, office, unit } = keysFor(row);
     if (!orgMap.has(unit)) orgMap.set(unit, { id: unit, region, office, unit });
     if (['invoice', 'movement', 'inventory'].includes(id) && !(id === 'inventory' && inventoryHistory)) {
       const key = JSON.stringify([row.brand || '未映射品牌', row.category || '未映射品类']);
@@ -65,8 +75,8 @@ export function createV10Model(payload, terminalBuilder = buildTerminalStructure
   const organizations = [...orgMap.values()].sort((a, b) => a.unit.localeCompare(b.unit, 'zh-CN'));
   const categories = [...categoryMap.values()].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
   const normalized = Object.fromEntries(ids.map(id => [id, payload.modules[id].records.map(row => {
-    const parts = partsFor(row);
-    return { ...row, region: identity(parts.slice(0, 4)), office: identity(parts.slice(0, 5)), unit: identity(parts),
+    const { region, office, unit } = keysFor(row);
+    return { ...row, region, office, unit,
       product: JSON.stringify([row.brand || '未映射品牌', row.category || '未映射品类']),
       month: row.date ? row.date.slice(0, 7) : null };
   })]));
@@ -379,8 +389,11 @@ export function createV10Model(payload, terminalBuilder = buildTerminalStructure
       }
       const hasSourcePeriod = normalized[id].some(row => id === 'banquet' || row.month && (['inventory', 'terminal'].includes(id) ? upToEnd(row) : inWindow(row)));
       if (!hasSourcePeriod && sourceModule.state !== 'unavailable') for (const item of [main, ...extra]) { item.value = null; item.state = 'missing'; item.reason = '该期间无来源记录'; }
+      // One pass groups rows by month in their original order (same sums as filtering per month).
+      const scopedByMonth = new Map();
+      for (const row of scoped) { let list = scopedByMonth.get(row.month); if (!list) { list = []; scopedByMonth.set(row.month, list); } list.push(row); }
       const monthly = months.filter(month => month !== 'fixed').map(month => {
-        const monthRows = scoped.filter(row => row.month === month);
+        const monthRows = scopedByMonth.get(month) || [];
         const m = metric(monthRows, id === 'inventory' && inventoryHistory ? 'records' : id === 'terminal' ? 'agreementCount' : field, sourceModule, month, id === 'inventory' && inventoryHistory ? '条' : id === 'terminal' ? '条' : unit);
         if (!monthRows.length) { m.value = null; m.state = 'missing'; m.reason = '该月无来源记录'; }
         return { month, ...m };

@@ -1,6 +1,8 @@
-import { readFile, realpath } from 'node:fs/promises';
+import { readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import { createHash } from 'node:crypto';
+import { promisify } from 'node:util';
+import { gunzip, gzip } from 'node:zlib';
 import ExcelJS from 'exceljs';
 import { validateWorkbook } from '../validate-workbook.mjs';
 import { normalizeHeader, moduleById } from '../modules.mjs';
@@ -273,7 +275,57 @@ function diagnostics(payload) {
  * Internal records retain provenance; the HTML exporter must project only the
  * fields needed by the UI and must not publish this local diagnostic report.
  */
-export async function buildSourcePayload({ dataDir, decisionsFile, sourceVersions, allowPending = false } = {}) {
+// Parsed source rows are cached beside each upload, keyed by the file SHA-256, the
+// module's validation contract and this parser's own source, so an unchanged
+// source is not read from Excel again. Values are the same scalar() results.
+const ROW_CACHE_FILE = 'rows-cache.json.gz';
+const ROW_CACHE_VERSION = 1;
+let parserSourceSha;
+const gzipAsync = promisify(gzip), gunzipAsync = promisify(gunzip);
+async function rowCacheKey(moduleId, sha256) {
+  parserSourceSha ??= createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex');
+  const { validationFingerprint } = await import('../recognition/fingerprint.mjs');
+  return createHash('sha256').update(JSON.stringify([ROW_CACHE_VERSION, moduleId, sha256, await validationFingerprint(moduleId), parserSourceSha])).digest('hex');
+}
+// JSON cannot carry -0; every other scalar() value (string, finite number, boolean, null) round-trips exactly.
+const encodeValue = value => Object.is(value, -0) ? { negativeZero: true } : value;
+const decodeValue = value => value !== null && typeof value === 'object' ? (value.negativeZero ? -0 : null) : value;
+async function readSourceRows({ file, buffer, moduleId, sha256, cacheFile }) {
+  // Only the backend's own generation opts in; previews and exports never write to the data directory.
+  const key = cacheFile ? await rowCacheKey(moduleId, sha256) : null;
+  if (cacheFile) try {
+    const cached = JSON.parse((await gunzipAsync(await readFile(cacheFile))).toString('utf8'));
+    if (cached.key === key && cached.sha256 === sha256 && Array.isArray(cached.headers) && Array.isArray(cached.rows)) {
+      const { headers } = cached;
+      const rows = cached.rows.map(([row, encoded]) => { const values = encoded.map(decodeValue); return { row, sheet: cached.sheetName, values, get: fieldAccess(headers, values) }; });
+      return { validation: cached.validation, sheetName: cached.sheetName, date1904: cached.date1904, headers, rows, cached: true };
+    }
+  } catch {}
+  const validation = await validateWorkbook(file, moduleId);
+  if (!validation.ok) return { validation, rows: [], headers: [] };
+  const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(buffer);
+  const sheet = workbook.getWorksheet(validation.sheet);
+  if (!sheet) throw new Error('已验证的主工作表不可读取。');
+  const headers = Array.from({ length: Math.min(sheet.columnCount, moduleById.get(moduleId).sourceColumnLimit ?? sheet.columnCount) }, (_, index) => text(scalar(sheet.getRow(1).getCell(index + 1).value)));
+  const rows = [];
+  sheet.eachRow({ includeEmpty: false }, (row, index) => {
+    if (index <= 1) return;
+    const values = headers.map((_, column) => scalar(row.getCell(column + 1).value));
+    if (!values.some(value => text(value) !== '')) return;
+    rows.push({ row: index, sheet: sheet.name, values, get: fieldAccess(headers, values) });
+  });
+  const result = { validation, sheetName: sheet.name, date1904: workbook.properties.date1904, headers, rows };
+  if (!cacheFile) return result;
+  // Best effort and atomic: a failed write only means the next generation reads Excel again.
+  const temp = `${cacheFile}.${process.pid}.${Date.now()}.tmp`;
+  try {
+    await writeFile(temp, await gzipAsync(JSON.stringify({ key, sha256, validation, sheetName: result.sheetName, date1904: result.date1904, headers, rows: rows.map(row => [row.row, row.values.map(encodeValue)]) }), { level: 6 }), { mode: 0o600 });
+    await rename(temp, cacheFile);
+  } catch { await rm(temp, { force: true }).catch(() => {}); }
+  return result;
+}
+
+export async function buildSourcePayload({ dataDir, decisionsFile, sourceVersions, allowPending = false, rowCache = false } = {}) {
   if (!dataDir) throw new Error('必须提供后台数据目录。');
   const root = await realpath(resolve(dataDir));
   const state = JSON.parse(await readFile(resolve(root, 'state.json'), 'utf8'));
@@ -294,21 +346,12 @@ export async function buildSourcePayload({ dataDir, decisionsFile, sourceVersion
       if (!upload || !/^[a-f0-9]{64}$/i.test(upload.sha256 ?? '')) throw new Error('上传版本或 SHA 记录不完整。');
       const file = await realpath(resolve(root, 'uploads', uploadId, 'source.xlsx'));
       if (!file.startsWith(`${resolve(root, 'uploads')}${sep}`)) throw new Error('上传文件路径越出后台 uploads 目录。');
-      const validation = await validateWorkbook(file, moduleId);
-      if (!validation.ok) throw new Error(`工作簿结构校验失败：${validation.errors.map(error => typeof error === 'string' ? error : error.message).join('；')}`);
       const buffer = await readFile(file), sha256 = createHash('sha256').update(buffer).digest('hex');
       if (sha256 !== upload.sha256.toLowerCase()) throw new Error('源文件 SHA 与有效上传记录不一致，已停止该板块计算。');
-      const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(buffer);
-      const sheet = workbook.getWorksheet(validation.sheet);
-      if (!sheet) throw new Error('已验证的主工作表不可读取。');
-      const headers = Array.from({ length: Math.min(sheet.columnCount, moduleById.get(moduleId).sourceColumnLimit ?? sheet.columnCount) }, (_, index) => text(scalar(sheet.getRow(1).getCell(index + 1).value)));
-      const rows = [];
-      sheet.eachRow({ includeEmpty: false }, (row, index) => {
-        if (index <= 1) return;
-        const values = headers.map((_, column) => scalar(row.getCell(column + 1).value));
-        if (!values.some(value => text(value) !== '')) return;
-        rows.push({ row: index, sheet: sheet.name, values, get: fieldAccess(headers, values) });
-      });
+      const { validation, sheetName, date1904, headers, rows } = await readSourceRows({ file, buffer, moduleId, sha256, cacheFile: rowCache ? resolve(root, 'uploads', uploadId, ROW_CACHE_FILE) : null });
+      if (!validation.ok) throw new Error(`工作簿结构校验失败：${validation.errors.map(error => typeof error === 'string' ? error : error.message).join('；')}`);
+      // Later steps only read the sheet name and the workbook date system.
+      const workbook = { properties: { date1904 } }, sheet = { name: sheetName };
       payload.sources[moduleId] = { uploadId, sha256, originalName: upload.filename ?? null, sheet: sheet.name, validationVersion: validation.validationVersion };
       detail.sourceRows = rows.length;
       let included = rows;
